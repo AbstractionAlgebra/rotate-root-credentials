@@ -61,11 +61,6 @@ package_managers:
   ubuntu: apt
   rhel: dnf
 
-# Service management commands
-service_commands:
-  ubuntu: systemctl
-  rhel: systemctl
-
 # Required packages for both platforms
 required_packages:
   ubuntu:

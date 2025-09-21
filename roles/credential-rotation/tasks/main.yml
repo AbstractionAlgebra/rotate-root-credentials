@@ -324,28 +324,21 @@
     - has_luks_devices | default(false)
     - luks_add_key_result is failed or luks_test_result is failed
 
-- name: Restart SSH service (Ubuntu)
-  ansible.builtin.service:
-    name: ssh
-    state: restarted
-  when: is_ubuntu and password_change_result is defined and password_change_result is succeeded
+# SSH restart removed - unnecessary for key-based authentication
+# Root password changes do not affect SSH key authentication
 
-- name: Restart SSH service (RHEL)
-  ansible.builtin.service:
-    name: sshd
-    state: restarted
-  when: is_rhel and password_change_result is defined and password_change_result is succeeded
+# SSH restart removed - unnecessary for key-based authentication
+# Root password changes do not affect SSH key authentication
 
-- name: Verify SSH service is running
-  ansible.builtin.service:
-    name: "{{ 'ssh' if is_ubuntu else 'sshd' }}"
-    state: started
+- name: Verify SSH service connectivity remains available
+  ansible.builtin.command: "systemctl is-active {{ 'ssh' if is_ubuntu else 'sshd' }}"
   register: ssh_status
+  changed_when: false
 
 - name: Log SSH service status
   ansible.builtin.lineinfile:
     path: "{{ rotation_log_file }}"
-    line: "{{ ansible_date_time.iso8601 }} - SSH service status on {{ inventory_hostname }}: {{ ssh_status.state }}"
+    line: "{{ ansible_date_time.iso8601 }} - SSH service status on {{ inventory_hostname }}: {{ ssh_status.stdout }}"
     create: yes
     mode: '0600'
     owner: root
@@ -366,7 +359,6 @@
     - has_luks_devices | default(false)
     - password_change_result is succeeded
     - luks_test_result is succeeded
-    - ssh_status.state == 'started'
 
 - name: Log secure deletion of LUKS header backup
   ansible.builtin.lineinfile:
@@ -382,7 +374,6 @@
     - has_luks_devices | default(false)
     - password_change_result is succeeded
     - luks_test_result is succeeded
-    - ssh_status.state == 'started'
     - luks_shred_result is succeeded
 
 - name: Clean up old backup files (keep last 30 days)
@@ -407,8 +398,8 @@
       Root Password: {{ 'SUCCESS' if password_change_result is succeeded else 'FAILED' }}
       LUKS Rotation: {{ 'ENABLED' if (rotate_luks | bool and luks_rotation_enabled | bool) else 'DISABLED' }}
       LUKS Devices: {{ 'DETECTED' if has_luks_devices | default(false) else 'NONE' }}
-      SSH Service: {{ ssh_status.state | default('UNKNOWN') }}
-      Security Model: NO_LOCAL_CREDENTIAL_STORAGE
+      SSH Service: {{ ssh_status.stdout | default('UNKNOWN') }} (key-based auth unaffected)
+      Security Model: NO_LOCAL_CREDENTIAL_STORAGE + SSH_KEY_AUTHENTICATION
       OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
     create: yes
     mode: '0600'
