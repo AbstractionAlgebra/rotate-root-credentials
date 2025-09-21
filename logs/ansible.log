@@ -1,0 +1,502 @@
+2025-09-21 00:13:35,879 p=276651 u=user n=ansible | # /usr/lib/python3/dist-packages/ansible_collections
+Collection                Version
+------------------------- -------
+
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | amazon.aws                1.4.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | ansible.netcommon         1.5.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | ansible.posix             1.1.1  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | ansible.windows           1.4.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | arista.eos                1.3.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | awx.awx                   14.1.0 
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | azure.azcollection        1.4.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | check_point.mgmt          1.0.6  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | chocolatey.chocolatey     1.0.2  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.aci                 1.1.1  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.asa                 1.0.4  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.intersight          1.0.10 
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.ios                 1.3.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.iosxr               1.2.1  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.meraki              2.2.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.mso                 1.1.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.nso                 1.0.3  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.nxos                1.4.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cisco.ucs                 1.6.0  
+2025-09-21 00:13:35,880 p=276651 u=user n=ansible | cloudscale_ch.cloud       1.3.1  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.aws             1.3.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.azure           1.0.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.crypto          1.4.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.digitalocean    1.0.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.docker          1.2.2  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.fortios         1.0.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.general         1.3.6  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.google          1.0.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.grafana         1.1.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.hashi_vault     1.1.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.hrobot          1.1.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.kubernetes      1.1.1  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.kubevirt        1.0.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.libvirt         1.0.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.mongodb         1.2.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.mysql           1.2.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.network         1.3.2  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.okd             1.0.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.postgresql      1.1.1  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.proxysql        1.0.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.rabbitmq        1.0.1  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.routeros        1.1.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.skydive         1.0.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.vmware          1.7.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.windows         1.3.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | community.zabbix          1.2.0  
+2025-09-21 00:13:35,881 p=276651 u=user n=ansible | containers.podman         1.4.1  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | cyberark.conjur           1.1.0  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | cyberark.pas              1.0.5  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | dellemc.os10              1.0.2  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | dellemc.os6               1.0.6  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | dellemc.os9               1.0.3  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | f5networks.f5_modules     1.7.1  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | fortinet.fortimanager     1.0.5  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | fortinet.fortios          1.1.8  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | frr.frr                   1.0.3  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | gluster.gluster           1.0.1  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | google.cloud              1.0.2  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | hetzner.hcloud            1.2.1  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | ibm.qradar                1.0.3  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | infinidat.infinibox       1.2.4  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | junipernetworks.junos     1.3.0  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | mellanox.onyx             1.0.0  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | netapp.aws                20.9.0 
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | netapp.elementsw          20.11.0
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | netapp.ontap              20.12.0
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | netapp_eseries.santricity 1.1.0  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | netbox.netbox             1.2.1  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | ngine_io.cloudstack       1.2.0  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | ngine_io.exoscale         1.0.0  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | ngine_io.vultr            1.1.0  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | openstack.cloud           1.2.1  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | openvswitch.openvswitch   1.1.0  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | ovirt.ovirt               1.3.0  
+2025-09-21 00:13:35,882 p=276651 u=user n=ansible | purestorage.flasharray    1.6.2  
+2025-09-21 00:13:35,883 p=276651 u=user n=ansible | purestorage.flashblade    1.4.0  
+2025-09-21 00:13:35,883 p=276651 u=user n=ansible | servicenow.servicenow     1.0.4  
+2025-09-21 00:13:35,883 p=276651 u=user n=ansible | splunk.es                 1.0.2  
+2025-09-21 00:13:35,883 p=276651 u=user n=ansible | theforeman.foreman        1.5.1  
+2025-09-21 00:13:35,883 p=276651 u=user n=ansible | vyos.vyos                 1.1.1  
+2025-09-21 00:13:35,883 p=276651 u=user n=ansible | wti.remote                1.0.1  
+2025-09-21 00:14:38,178 p=277070 u=user n=ansible | ERROR! the role 'credential-rotation' was not found in /home/user/github/rotate-root-credentials/playbooks/roles:/home/user/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/user/github/rotate-root-credentials/playbooks
+
+The error appears to be in '/home/user/github/rotate-root-credentials/playbooks/rotate-passwords.yml': line 41, column 7, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+  roles:
+    - credential-rotation
+      ^ here
+
+2025-09-21 00:14:43,007 p=277127 u=user n=ansible | ERROR! the role 'credential-rotation' was not found in /home/user/github/rotate-root-credentials/playbooks/roles:/home/user/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/user/github/rotate-root-credentials/playbooks
+
+The error appears to be in '/home/user/github/rotate-root-credentials/playbooks/rotate-passwords.yml': line 41, column 7, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+  roles:
+    - credential-rotation
+      ^ here
+
+2025-09-21 00:14:56,444 p=277240 u=user n=ansible | ERROR! 'retries' is not a valid attribute for a Block
+
+The error appears to be in '/home/user/github/rotate-root-credentials/roles/credential-rotation/tasks/main.yml': line 57, column 3, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+
+- name: Perform password rotation with retries
+  ^ here
+
+2025-09-21 00:15:18,578 p=277415 u=user n=ansible | playbook: playbooks/rotate-passwords.yml
+2025-09-21 00:21:50,481 p=279646 u=user n=ansible | playbook: playbooks/rotate-passwords.yml
+2025-09-21 00:22:09,077 p=279790 u=user n=ansible | {
+    "_meta": {
+        "hostvars": {
+            "rhel-01.example.com": {
+                "ansible_ssh_common_args": "-o StrictHostKeyChecking=no",
+                "ansible_ssh_private_key_file": "~/.ssh/id_rsa",
+                "ansible_user": "root",
+                "backup_enabled": true,
+                "backup_retention_days": 30,
+                "classification_level": "classified",
+                "command_timeout": 60,
+                "compliance_framework": "DISA_STIG",
+                "connection_timeout": 30,
+                "gather_facts": true,
+                "local_log_path": "{{ playbook_dir }}/logs",
+                "log_retention_days": 365,
+                "log_rotation_enabled": true,
+                "max_retries": 3,
+                "os_family": "rhel",
+                "package_managers": {
+                    "rhel": "dnf",
+                    "ubuntu": "apt"
+                },
+                "password_policy": {
+                    "deny_username_in_password": true,
+                    "min_length": 14,
+                    "require_lowercase": true,
+                    "require_numbers": true,
+                    "require_special_chars": true,
+                    "require_uppercase": true
+                },
+                "required_packages": {
+                    "rhel": [
+                        "python3",
+                        "python3-pip",
+                        "openssh-server"
+                    ],
+                    "ubuntu": [
+                        "python3",
+                        "python3-passlib",
+                        "openssh-server"
+                    ]
+                },
+                "retry_delay": 5,
+                "rotation_interval_days": 90,
+                "rotation_log_dir": "/var/log/credential-rotation",
+                "service_commands": {
+                    "rhel": "systemctl",
+                    "ubuntu": "systemctl"
+                }
+            },
+            "rhel-02.example.com": {
+                "ansible_ssh_common_args": "-o StrictHostKeyChecking=no",
+                "ansible_ssh_private_key_file": "~/.ssh/id_rsa",
+                "ansible_user": "root",
+                "backup_enabled": true,
+                "backup_retention_days": 30,
+                "classification_level": "classified",
+                "command_timeout": 60,
+                "compliance_framework": "DISA_STIG",
+                "connection_timeout": 30,
+                "gather_facts": true,
+                "local_log_path": "{{ playbook_dir }}/logs",
+                "log_retention_days": 365,
+                "log_rotation_enabled": true,
+                "max_retries": 3,
+                "os_family": "rhel",
+                "package_managers": {
+                    "rhel": "dnf",
+                    "ubuntu": "apt"
+                },
+                "password_policy": {
+                    "deny_username_in_password": true,
+                    "min_length": 14,
+                    "require_lowercase": true,
+                    "require_numbers": true,
+                    "require_special_chars": true,
+                    "require_uppercase": true
+                },
+                "required_packages": {
+                    "rhel": [
+                        "python3",
+                        "python3-pip",
+                        "openssh-server"
+                    ],
+                    "ubuntu": [
+                        "python3",
+                        "python3-passlib",
+                        "openssh-server"
+                    ]
+                },
+                "retry_delay": 5,
+                "rotation_interval_days": 90,
+                "rotation_log_dir": "/var/log/credential-rotation",
+                "service_commands": {
+                    "rhel": "systemctl",
+                    "ubuntu": "systemctl"
+                }
+            },
+            "ubuntu-01.example.com": {
+                "ansible_ssh_common_args": "-o StrictHostKeyChecking=no",
+                "ansible_ssh_private_key_file": "~/.ssh/id_rsa",
+                "ansible_user": "root",
+                "backup_enabled": true,
+                "backup_retention_days": 30,
+                "classification_level": "classified",
+                "command_timeout": 60,
+                "compliance_framework": "DISA_STIG",
+                "connection_timeout": 30,
+                "gather_facts": true,
+                "local_log_path": "{{ playbook_dir }}/logs",
+                "log_retention_days": 365,
+                "log_rotation_enabled": true,
+                "max_retries": 3,
+                "os_family": "ubuntu",
+                "package_managers": {
+                    "rhel": "dnf",
+                    "ubuntu": "apt"
+                },
+                "password_policy": {
+                    "deny_username_in_password": true,
+                    "min_length": 14,
+                    "require_lowercase": true,
+                    "require_numbers": true,
+                    "require_special_chars": true,
+                    "require_uppercase": true
+                },
+                "required_packages": {
+                    "rhel": [
+                        "python3",
+                        "python3-pip",
+                        "openssh-server"
+                    ],
+                    "ubuntu": [
+                        "python3",
+                        "python3-passlib",
+                        "openssh-server"
+                    ]
+                },
+                "retry_delay": 5,
+                "rotation_interval_days": 90,
+                "rotation_log_dir": "/var/log/credential-rotation",
+                "service_commands": {
+                    "rhel": "systemctl",
+                    "ubuntu": "systemctl"
+                }
+            },
+            "ubuntu-02.example.com": {
+                "ansible_ssh_common_args": "-o StrictHostKeyChecking=no",
+                "ansible_ssh_private_key_file": "~/.ssh/id_rsa",
+                "ansible_user": "root",
+                "backup_enabled": true,
+                "backup_retention_days": 30,
+                "classification_level": "classified",
+                "command_timeout": 60,
+                "compliance_framework": "DISA_STIG",
+                "connection_timeout": 30,
+                "gather_facts": true,
+                "local_log_path": "{{ playbook_dir }}/logs",
+                "log_retention_days": 365,
+                "log_rotation_enabled": true,
+                "max_retries": 3,
+                "os_family": "ubuntu",
+                "package_managers": {
+                    "rhel": "dnf",
+                    "ubuntu": "apt"
+                },
+                "password_policy": {
+                    "deny_username_in_password": true,
+                    "min_length": 14,
+                    "require_lowercase": true,
+                    "require_numbers": true,
+                    "require_special_chars": true,
+                    "require_uppercase": true
+                },
+                "required_packages": {
+                    "rhel": [
+                        "python3",
+                        "python3-pip",
+                        "openssh-server"
+                    ],
+                    "ubuntu": [
+                        "python3",
+                        "python3-passlib",
+                        "openssh-server"
+                    ]
+                },
+                "retry_delay": 5,
+                "rotation_interval_days": 90,
+                "rotation_log_dir": "/var/log/credential-rotation",
+                "service_commands": {
+                    "rhel": "systemctl",
+                    "ubuntu": "systemctl"
+                }
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "rhel",
+            "ubuntu",
+            "ungrouped"
+        ]
+    },
+    "rhel": {
+        "hosts": [
+            "rhel-01.example.com",
+            "rhel-02.example.com"
+        ]
+    },
+    "ubuntu": {
+        "hosts": [
+            "ubuntu-01.example.com",
+            "ubuntu-02.example.com"
+        ]
+    }
+}
+2025-09-21 00:24:15,092 p=280655 u=user n=ansible | ERROR! 'retries' is not a valid attribute for a Block
+
+The error appears to be in '/home/user/github/rotate-root-credentials/roles/credential-rotation/tasks/main.yml': line 57, column 3, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+
+- name: Perform password rotation with retries
+  ^ here
+
+2025-09-21 00:24:15,641 p=280686 u=user n=ansible | ERROR! 'retries' is not a valid attribute for a Block
+
+The error appears to be in '/home/user/github/rotate-root-credentials/roles/credential-rotation/tasks/main.yml': line 57, column 3, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+
+- name: Perform password rotation with retries
+  ^ here
+
+2025-09-21 00:25:43,308 p=281270 u=user n=ansible | playbook: playbooks/rotate-passwords.yml
+2025-09-21 00:25:43,903 p=281295 u=user n=ansible | PLAY [Linux Root Password Rotation Playbook] ***********************************
+2025-09-21 00:25:43,944 p=281295 u=user n=ansible | TASK [Gathering Facts] *********************************************************
+2025-09-21 00:25:43,945 p=281295 u=user n=ansible | fatal: [ubuntu-01.example.com]: FAILED! => 
+  msg: 'The field ''timeout'' has an invalid value, which includes an undefined variable. The error was: ''connection_timeout'' is undefined'
+2025-09-21 00:25:43,948 p=281295 u=user n=ansible | PLAY RECAP *********************************************************************
+2025-09-21 00:25:43,949 p=281295 u=user n=ansible | ubuntu-01.example.com      : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2025-09-21 00:25:54,487 p=281398 u=user n=ansible | PLAY [Ansible Ad-Hoc] **********************************************************
+2025-09-21 00:25:54,523 p=281398 u=user n=ansible | TASK [debug] *******************************************************************
+2025-09-21 00:25:54,562 p=281398 u=user n=ansible | ok: [ubuntu-01.example.com] => 
+  connection_timeout: 30
+2025-09-21 00:25:54,571 p=281398 u=user n=ansible | PLAY RECAP *********************************************************************
+2025-09-21 00:25:54,571 p=281398 u=user n=ansible | ubuntu-01.example.com      : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-09-21 00:25:55,086 p=281427 u=user n=ansible | PLAY [Ansible Ad-Hoc] **********************************************************
+2025-09-21 00:25:55,113 p=281427 u=user n=ansible | TASK [debug] *******************************************************************
+2025-09-21 00:25:55,158 p=281427 u=user n=ansible | ok: [ubuntu-01.example.com] => 
+  hostvars[inventory_hostname]:
+    ansible_check_mode: false
+    ansible_config_file: /home/user/github/rotate-root-credentials/ansible.cfg
+    ansible_diff_mode: false
+    ansible_facts: {}
+    ansible_forks: 10
+    ansible_inventory_sources:
+    - /home/user/github/rotate-root-credentials/inventory/production.yml
+    ansible_playbook_python: /usr/bin/python3
+    ansible_ssh_common_args: -o StrictHostKeyChecking=no
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa
+    ansible_user: root
+    ansible_verbosity: 0
+    ansible_version:
+      full: 2.10.8
+      major: 2
+      minor: 10
+      revision: 8
+      string: 2.10.8
+    backup_enabled: true
+    backup_retention_days: 30
+    classification_level: classified
+    command_timeout: 60
+    compliance_framework: DISA_STIG
+    connection_timeout: 30
+    gather_facts: true
+    group_names:
+    - ubuntu
+    groups:
+      all:
+      - ubuntu-01.example.com
+      - ubuntu-02.example.com
+      - rhel-01.example.com
+      - rhel-02.example.com
+      rhel:
+      - rhel-01.example.com
+      - rhel-02.example.com
+      ubuntu:
+      - ubuntu-01.example.com
+      - ubuntu-02.example.com
+      ungrouped: []
+    inventory_dir: /home/user/github/rotate-root-credentials/inventory
+    inventory_file: /home/user/github/rotate-root-credentials/inventory/production.yml
+    inventory_hostname: ubuntu-01.example.com
+    inventory_hostname_short: ubuntu-01
+    local_log_path: /home/user/github/rotate-root-credentials/logs
+    log_retention_days: 365
+    log_rotation_enabled: true
+    max_retries: 3
+    omit: __omit_place_holder__65ce481b50dbb52fe2ff4ee8e6f3d94b8603109b
+    os_family: ubuntu
+    package_managers:
+      rhel: dnf
+      ubuntu: apt
+    password_policy:
+      deny_username_in_password: true
+      min_length: 14
+      require_lowercase: true
+      require_numbers: true
+      require_special_chars: true
+      require_uppercase: true
+    playbook_dir: /home/user/github/rotate-root-credentials
+    required_packages:
+      rhel:
+      - python3
+      - python3-pip
+      - openssh-server
+      ubuntu:
+      - python3
+      - python3-passlib
+      - openssh-server
+    retry_delay: 5
+    rotation_interval_days: 90
+    rotation_log_dir: /var/log/credential-rotation
+    service_commands:
+      rhel: systemctl
+      ubuntu: systemctl
+2025-09-21 00:25:55,162 p=281427 u=user n=ansible | PLAY RECAP *********************************************************************
+2025-09-21 00:25:55,162 p=281427 u=user n=ansible | ubuntu-01.example.com      : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-09-21 00:26:04,454 p=281523 u=user n=ansible | PLAY [Linux Root Password Rotation Playbook] ***********************************
+2025-09-21 00:26:04,875 p=281526 u=user n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host
+ubuntu-01.example.com: Failed to connect to the host via ssh: ssh: Could not
+resolve hostname ubuntu-01.example.com: Name or service not known
+
+2025-09-21 00:26:04,912 p=281523 u=user n=ansible | TASK [Gathering Facts] *********************************************************
+2025-09-21 00:26:04,914 p=281523 u=user n=ansible | fatal: [ubuntu-01.example.com]: UNREACHABLE! => changed=false 
+  msg: |-
+    Data could not be sent to remote host "ubuntu-01.example.com". Make sure this host can be reached over ssh: ssh: Could not resolve hostname ubuntu-01.example.com: Name or service not known
+  unreachable: true
+2025-09-21 00:26:04,915 p=281523 u=user n=ansible | NO MORE HOSTS LEFT *************************************************************
+2025-09-21 00:26:04,916 p=281523 u=user n=ansible | PLAY RECAP *********************************************************************
+2025-09-21 00:26:04,916 p=281523 u=user n=ansible | ubuntu-01.example.com      : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2025-09-21 00:26:11,126 p=281594 u=user n=ansible | playbook: playbooks/rotate-passwords.yml
+2025-09-21 00:26:24,261 p=281710 u=user n=ansible | playbook: playbooks/rotate-passwords.yml
+2025-09-21 00:33:52,995 p=285139 u=user n=ansible | ERROR! vars file ../vault/secrets.yml was not found
+Could not find file on the Ansible Controller.
+If you are using a module and expect the file to exist on the remote, see the remote_src option
+2025-09-21 00:34:02,217 p=285233 u=user n=ansible | playbook: rotate-creds.yml
+2025-09-21 00:34:20,056 p=285488 u=user n=ansible | playbook: rotate-creds.yml
+2025-09-21 00:52:18,597 p=292271 u=user n=ansible | playbook: rotate-creds.yml
+2025-09-21 00:52:27,523 p=292379 u=user n=ansible | PLAY [Linux Root Password Rotation Playbook] ***********************************
+2025-09-21 00:52:27,836 p=292382 u=user n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host
+ubuntu-01.example.com: Failed to connect to the host via ssh: ssh: Could not
+resolve hostname ubuntu-01.example.com: Name or service not known
+
+2025-09-21 00:52:27,865 p=292379 u=user n=ansible | TASK [Gathering Facts] *********************************************************
+2025-09-21 00:52:27,867 p=292379 u=user n=ansible | fatal: [ubuntu-01.example.com]: UNREACHABLE! => changed=false 
+  msg: |-
+    Data could not be sent to remote host "ubuntu-01.example.com". Make sure this host can be reached over ssh: ssh: Could not resolve hostname ubuntu-01.example.com: Name or service not known
+  unreachable: true
+2025-09-21 00:52:27,868 p=292379 u=user n=ansible | NO MORE HOSTS LEFT *************************************************************
+2025-09-21 00:52:27,870 p=292379 u=user n=ansible | PLAY RECAP *********************************************************************
+2025-09-21 00:52:27,870 p=292379 u=user n=ansible | ubuntu-01.example.com      : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2025-09-21 00:52:32,406 p=292436 u=user n=ansible | PLAY [Linux Root Password Rotation Playbook] ***********************************
+2025-09-21 00:52:32,664 p=292445 u=user n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host
+ubuntu-01.example.com: Failed to connect to the host via ssh: ssh: Could not
+resolve hostname ubuntu-01.example.com: Name or service not known
+
+2025-09-21 00:52:32,687 p=292436 u=user n=ansible | TASK [Gathering Facts] *********************************************************
+2025-09-21 00:52:32,688 p=292436 u=user n=ansible | fatal: [ubuntu-01.example.com]: UNREACHABLE! => changed=false 
+  msg: |-
+    Data could not be sent to remote host "ubuntu-01.example.com". Make sure this host can be reached over ssh: ssh: Could not resolve hostname ubuntu-01.example.com: Name or service not known
+  unreachable: true
+2025-09-21 00:52:32,690 p=292436 u=user n=ansible | NO MORE HOSTS LEFT *************************************************************
+2025-09-21 00:52:32,692 p=292436 u=user n=ansible | PLAY RECAP *********************************************************************
+2025-09-21 00:52:32,692 p=292436 u=user n=ansible | ubuntu-01.example.com      : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2025-09-21 00:52:54,665 p=292610 u=user n=ansible | playbook: rotate-creds.yml

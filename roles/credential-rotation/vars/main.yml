@@ -1,0 +1,33 @@
+---
+# Role variables for credential rotation
+
+# Target user for password rotation
+target_user: root
+
+# Timestamp format for logging
+timestamp_format: "%Y-%m-%d %H:%M:%S UTC"
+
+# Default rotation tracking file
+rotation_tracking_file: "/etc/credential-rotation-last"
+
+# Backup directory for old password hashes
+backup_dir: "/var/backups/credential-rotation"
+
+# Log file locations
+rotation_log_file: "{{ local_log_path }}/rotation-{{ ansible_date_time.date }}.log"
+error_log_file: "{{ local_log_path }}/errors-{{ ansible_date_time.date }}.log"
+
+# System status check commands
+status_check_commands:
+  ubuntu:
+    - "systemctl status ssh"
+    - "id {{ target_user }}"
+  rhel:
+    - "systemctl status sshd"
+    - "id {{ target_user }}"
+
+# Pre-rotation validation commands
+validation_commands:
+  - "whoami"
+  - "pwd"
+  - "date"

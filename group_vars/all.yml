@@ -1,0 +1,60 @@
+---
+# Common variables for all systems (Ubuntu 22.04+ and RHEL 8+)
+
+# Password rotation settings
+rotation_interval_days: 90
+max_retries: 3
+retry_delay: 5
+
+# LUKS rotation settings (DISABLED by default for safety)
+rotate_luks: false  # Set to true to enable LUKS password rotation
+luks_rotation_enabled: false  # Additional safety check - both must be true
+luks_max_retries: 2  # Fewer retries for LUKS due to risk
+luks_key_slot_backup: true  # Always backup key slot info before rotation
+
+# System compliance settings
+compliance_framework: "DISA_STIG"
+classification_level: "classified"
+
+# Logging configuration
+log_rotation_enabled: true
+log_retention_days: 365
+local_log_path: "{{ playbook_dir }}/logs"
+
+# Package managers by OS family
+package_managers:
+  ubuntu: apt
+  rhel: dnf
+
+# Service management commands
+service_commands:
+  ubuntu: systemctl
+  rhel: systemctl
+
+# Required packages for both platforms
+required_packages:
+  ubuntu:
+    - python3
+    - python3-passlib
+    - openssh-server
+  rhel:
+    - python3
+    - python3-pip
+    - openssh-server
+
+# Password policy enforcement (DISA STIG compliant)
+password_policy:
+  min_length: 14
+  require_uppercase: true
+  require_lowercase: true
+  require_numbers: true
+  require_special_chars: true
+  deny_username_in_password: true
+
+# Connection timeout settings
+connection_timeout: 30
+command_timeout: 60
+
+# Backup settings
+backup_enabled: true
+backup_retention_days: 30

@@ -1,0 +1,32 @@
+---
+all:
+  children:
+    ubuntu:
+      hosts:
+        # Ubuntu 22.04+ systems
+        ubuntu-01.example.com:
+        ubuntu-02.example.com:
+        # Add remaining Ubuntu hosts here
+        # ubuntu-nn.example.com:
+      vars:
+        ansible_user: root
+        ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        os_family: ubuntu
+
+    rhel:
+      hosts:
+        # RHEL 8+ systems
+        rhel-01.example.com:
+        rhel-02.example.com:
+        # Add remaining RHEL hosts here
+        # rhel-nn.example.com:
+      vars:
+        ansible_user: root
+        ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        os_family: rhel
+
+  vars:
+    # Global variables for all hosts
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    gather_facts: yes
+    rotation_log_dir: /var/log/credential-rotation

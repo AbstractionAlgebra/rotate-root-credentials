@@ -1,0 +1,108 @@
+# ==============================================================================
+# Linux Root Password and LUKS Rotation Playbook
+# ==============================================================================
+# Version:     2.0
+# Description: Automated root password and optional LUKS encryption password
+#              rotation for enterprise Linux systems with comprehensive logging,
+#              backup/restore, date tracking, and DISA STIG compliance
+# Date:        2025-09-21
+# Author:      Michael Angel
+#
+# Features:
+# • Multi-platform support (Ubuntu 22.04+, RHEL/CentOS/Rocky/AlmaLinux 8+)
+# • Secure password storage using Ansible Vault encryption with history tracking
+# • Optional LUKS encryption password rotation (disabled by default for safety)
+# • Password history tracking with previous passwords for rollback capability
+# • Rotation date tracking and audit trail maintenance
+# • Automatic backup and restore functionality for failed rotations
+# • Comprehensive audit logging with rotation tracking and summaries
+# • DISA STIG compliant password policies and procedures
+# • Retry mechanisms with configurable failure tolerance (max 20% failure rate)
+# • SSH service management and connectivity verification
+# • Parallel execution with free strategy for performance
+# • LUKS device detection and safe key slot management
+# • Compliance tracking and reporting capabilities
+#
+# Sample Usage:
+#   # Encrypt vault with new passwords first:
+#   ansible-vault edit vault/secrets.yml
+#
+#   # Run root password rotation only (default, safe):
+#   ansible-playbook rotate-creds.yml
+#
+#   # Run with LUKS rotation enabled (requires both flags):
+#   ansible-playbook rotate-creds.yml -e "rotate_luks=true luks_rotation_enabled=true"
+#
+#   # Run on specific group:
+#   ansible-playbook rotate-creds.yml --limit ubuntu
+#
+#   # Dry run to test:
+#   ansible-playbook rotate-creds.yml --check
+# ==============================================================================
+
+---
+- name: Linux Root Password Rotation Playbook
+  hosts: all
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - vault/secrets.yml
+
+  pre_tasks:
+    - name: Display rotation start message
+      ansible.builtin.debug:
+        msg: "Starting password rotation for {{ inventory_hostname }} at {{ ansible_date_time.iso8601 }}"
+
+    - name: Verify new password is provided
+      ansible.builtin.fail:
+        msg: "new_root_password variable not found in vault"
+      when: new_root_password is not defined or new_root_password == ""
+
+    - name: Check system connectivity
+      ansible.builtin.ping:
+      register: connectivity_check
+
+    - name: Validate supported OS version
+      ansible.builtin.assert:
+        that:
+          - (ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('22.04', '>=')) or
+            (ansible_distribution in ['RedHat', 'CentOS', 'Rocky', 'AlmaLinux'] and ansible_distribution_major_version|int >= 8)
+        fail_msg: "Unsupported OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+        success_msg: "Supported OS confirmed: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Log systems that are unreachable
+      ansible.builtin.lineinfile:
+        path: "{{ local_log_path }}/offline-systems-{{ ansible_date_time.date }}.log"
+        line: "{{ ansible_date_time.iso8601 }} - OFFLINE: {{ inventory_hostname }} is unreachable"
+        create: yes
+        mode: '0600'
+      delegate_to: localhost
+      when: connectivity_check is failed
+
+  roles:
+    - credential-rotation
+
+  post_tasks:
+    - name: Generate rotation summary
+      ansible.builtin.debug:
+        msg: "Password rotation completed for {{ inventory_hostname }} at {{ ansible_date_time.iso8601 }}"
+
+    - name: Update compliance tracking
+      ansible.builtin.lineinfile:
+        path: "{{ local_log_path }}/compliance-tracking.log"
+        line: "{{ ansible_date_time.iso8601 }},{{ inventory_hostname }},{{ ansible_distribution }},{{ ansible_distribution_version }},SUCCESS,90-day rotation"
+        create: yes
+        mode: '0600'
+      delegate_to: localhost
+
+  handlers:
+    - name: Send notification on completion
+      ansible.builtin.debug:
+        msg: "Password rotation playbook completed for all systems"
+
+  strategy: free
+  max_fail_percentage: 20
+
+  vars:
+    ansible_ssh_timeout: "{{ connection_timeout | default(30) }}"
+    ansible_command_timeout: "{{ command_timeout | default(60) }}"

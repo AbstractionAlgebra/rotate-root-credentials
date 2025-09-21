@@ -1,0 +1,349 @@
+---
+# Main tasks for credential rotation
+
+- name: Set facts for OS detection
+  ansible.builtin.set_fact:
+    is_ubuntu: "{{ ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('22.04', '>=') }}"
+    is_rhel: "{{ ansible_distribution in ['RedHat', 'CentOS', 'Rocky', 'AlmaLinux'] and ansible_distribution_major_version|int >= 8 }}"
+
+- name: Fail if OS is not supported
+  ansible.builtin.fail:
+    msg: "Unsupported OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+  when: not (is_ubuntu or is_rhel)
+
+- name: Create local log directory
+  ansible.builtin.file:
+    path: "{{ local_log_path }}"
+    state: directory
+    mode: '0750'
+  delegate_to: localhost
+  run_once: true
+
+- name: Log rotation start
+  ansible.builtin.lineinfile:
+    path: "{{ rotation_log_file }}"
+    line: "{{ ansible_date_time.iso8601 }} - Starting password rotation on {{ inventory_hostname }} ({{ ansible_distribution }} {{ ansible_distribution_version }})"
+    create: yes
+    mode: '0600'
+  delegate_to: localhost
+
+- name: Create backup directory on target system
+  ansible.builtin.file:
+    path: "{{ backup_dir }}"
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+
+# LUKS Detection and Safety Tasks (Conditional)
+- name: Log LUKS rotation status
+  ansible.builtin.lineinfile:
+    path: "{{ rotation_log_file }}"
+    line: "{{ ansible_date_time.iso8601 }} - LUKS rotation {{ 'ENABLED' if (rotate_luks | bool and luks_rotation_enabled | bool) else 'DISABLED' }} on {{ inventory_hostname }}"
+    create: yes
+    mode: '0600'
+  delegate_to: localhost
+
+- name: Detect LUKS encrypted devices
+  ansible.builtin.shell: "lsblk -f | grep crypto_LUKS || echo 'No LUKS devices found'"
+  register: luks_devices_detected
+  changed_when: false
+  when: rotate_luks | bool and luks_rotation_enabled | bool
+
+- name: Set LUKS device fact
+  ansible.builtin.set_fact:
+    has_luks_devices: "{{ 'crypto_LUKS' in luks_devices_detected.stdout }}"
+  when: rotate_luks | bool and luks_rotation_enabled | bool
+
+- name: Log LUKS device detection results
+  ansible.builtin.lineinfile:
+    path: "{{ rotation_log_file }}"
+    line: "{{ ansible_date_time.iso8601 }} - LUKS devices detected on {{ inventory_hostname }}: {{ 'Yes' if has_luks_devices | default(false) else 'No' }}"
+    create: yes
+    mode: '0600'
+  delegate_to: localhost
+  when: rotate_luks | bool and luks_rotation_enabled | bool
+
+- name: Skip LUKS rotation if no devices found
+  ansible.builtin.debug:
+    msg: "No LUKS devices found - skipping LUKS password rotation"
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - not (has_luks_devices | default(false))
+
+- name: Check current password last changed date
+  ansible.builtin.shell: "chage -l {{ target_user }} | grep 'Last password change' || echo 'Last password change: never'"
+  register: password_last_changed
+  changed_when: false
+
+- name: Get current password hash for backup
+  ansible.builtin.shell: "getent shadow {{ target_user }} | cut -d: -f2"
+  register: current_password_hash
+  changed_when: false
+  no_log: true
+
+- name: Backup current password hash
+  ansible.builtin.copy:
+    content: "{{ current_password_hash.stdout }}"
+    dest: "{{ backup_dir }}/password_hash_{{ ansible_date_time.epoch }}"
+    mode: '0600'
+    owner: root
+    group: root
+
+- name: Change root password with retries
+  ansible.builtin.user:
+    name: "{{ target_user }}"
+    password: "{{ current_passwords.root | password_hash('sha512') }}"
+    update_password: always
+  register: password_change_result
+  no_log: true
+  retries: "{{ max_retries }}"
+  delay: "{{ retry_delay }}"
+  until: password_change_result is succeeded
+
+- name: Verify password change by checking shadow file
+  ansible.builtin.shell: "getent shadow {{ target_user }} | cut -d: -f2"
+  register: new_password_hash
+  changed_when: false
+  no_log: true
+  when: password_change_result is succeeded
+
+- name: Verify password hash changed
+  ansible.builtin.assert:
+    that:
+      - new_password_hash.stdout != current_password_hash.stdout
+      - new_password_hash.stdout != ""
+    fail_msg: "Password verification failed - hash did not change"
+    success_msg: "Password successfully changed and verified"
+  when: password_change_result is succeeded
+
+- name: Handle password rotation failure
+  block:
+    - name: Log rotation failure
+      ansible.builtin.lineinfile:
+        path: "{{ error_log_file }}"
+        line: "{{ ansible_date_time.iso8601 }} - FAILED: Password rotation failed on {{ inventory_hostname }} - {{ ansible_failed_result.msg | default('Unknown error') }}"
+        create: yes
+        mode: '0600'
+      delegate_to: localhost
+
+    - name: Restore password from backup if needed
+      ansible.builtin.shell: |
+        if [ -f "{{ backup_dir }}/password_hash_{{ ansible_date_time.epoch }}" ]; then
+          usermod -p "$(cat {{ backup_dir }}/password_hash_{{ ansible_date_time.epoch }})" {{ target_user }}
+          echo "Password restored from backup"
+        fi
+      register: restore_result
+
+    - name: Fail the task after restore attempt
+      ansible.builtin.fail:
+        msg: "Password rotation failed on {{ inventory_hostname }}"
+  when: password_change_result is failed
+
+- name: Update password change tracking
+  ansible.builtin.copy:
+    content: "{{ ansible_date_time.iso8601 }}"
+    dest: "{{ rotation_tracking_file }}"
+    mode: '0600'
+    owner: root
+    group: root
+  when: password_change_result is succeeded
+
+- name: Log successful rotation
+  ansible.builtin.lineinfile:
+    path: "{{ rotation_log_file }}"
+    line: "{{ ansible_date_time.iso8601 }} - SUCCESS: Password rotated on {{ inventory_hostname }}"
+    create: yes
+    mode: '0600'
+  delegate_to: localhost
+  when: password_change_result is succeeded
+
+# Update vault with rotation history (requires vault editing)
+- name: Log rotation history update needed
+  ansible.builtin.lineinfile:
+    path: "{{ rotation_log_file }}"
+    line: "{{ ansible_date_time.iso8601 }} - INFO: Manual vault update required for {{ inventory_hostname }} - update rotation_history.root_last_changed and rotation_count"
+    create: yes
+    mode: '0600'
+  delegate_to: localhost
+  when: password_change_result is succeeded
+
+# LUKS Password Rotation Process (Conditional and Safe)
+- name: Begin LUKS rotation process
+  ansible.builtin.debug:
+    msg: "Starting LUKS password rotation on {{ inventory_hostname }}"
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+
+- name: Get first LUKS device for rotation
+  ansible.builtin.shell: "lsblk -f | grep crypto_LUKS | head -1 | awk '{print $1}'"
+  register: luks_device_name
+  changed_when: false
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+
+- name: Get LUKS device path
+  ansible.builtin.shell: "lsblk -no PKNAME /dev/mapper/$(echo {{ luks_device_name.stdout }})"
+  register: luks_device_path
+  changed_when: false
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+    - luks_device_name.stdout != ""
+
+- name: Backup LUKS header information
+  ansible.builtin.shell: "cryptsetup luksDump /dev/{{ luks_device_path.stdout }} > {{ backup_dir }}/luks_header_{{ ansible_date_time.epoch }}.txt"
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+    - luks_key_slot_backup | bool
+    - luks_device_path.stdout is defined
+
+- name: Find available LUKS key slot
+  ansible.builtin.shell: |
+    for i in {0..7}; do
+      if ! cryptsetup luksDump /dev/{{ luks_device_path.stdout }} | grep -q "Key Slot $i: ENABLED"; then
+        echo $i
+        break
+      fi
+    done
+  register: available_key_slot
+  changed_when: false
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+    - luks_device_path.stdout is defined
+
+- name: Add new LUKS passphrase to available slot
+  ansible.builtin.expect:
+    command: "cryptsetup luksAddKey /dev/{{ luks_device_path.stdout }}"
+    responses:
+      'Enter any existing passphrase:': "{{ current_passwords.luks }}"
+      'Enter new passphrase:': "{{ current_passwords.luks }}"
+      'Verify passphrase:': "{{ current_passwords.luks }}"
+    timeout: 30
+  register: luks_add_key_result
+  no_log: true
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+    - available_key_slot.stdout is defined
+    - available_key_slot.stdout != ""
+
+- name: Test new LUKS passphrase
+  ansible.builtin.shell: "echo '{{ current_passwords.luks }}' | cryptsetup --test-passphrase luksOpen /dev/{{ luks_device_path.stdout }}"
+  register: luks_test_result
+  changed_when: false
+  no_log: true
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+    - luks_add_key_result is succeeded
+
+- name: Remove old LUKS passphrase
+  ansible.builtin.expect:
+    command: "cryptsetup luksRemoveKey /dev/{{ luks_device_path.stdout }}"
+    responses:
+      'Enter passphrase to be deleted:': "{{ previous_passwords.luks | default('') }}"
+    timeout: 30
+  register: luks_remove_key_result
+  no_log: true
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+    - luks_test_result is succeeded
+    - previous_passwords.luks != ""
+
+- name: Log LUKS rotation success
+  ansible.builtin.lineinfile:
+    path: "{{ rotation_log_file }}"
+    line: "{{ ansible_date_time.iso8601 }} - SUCCESS: LUKS password rotated on {{ inventory_hostname }} for device /dev/{{ luks_device_path.stdout }}"
+    create: yes
+    mode: '0600'
+  delegate_to: localhost
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - luks_test_result is succeeded
+
+- name: Handle LUKS rotation failure
+  block:
+    - name: Log LUKS rotation failure
+      ansible.builtin.lineinfile:
+        path: "{{ error_log_file }}"
+        line: "{{ ansible_date_time.iso8601 }} - FAILED: LUKS password rotation failed on {{ inventory_hostname }}"
+        create: yes
+        mode: '0600'
+      delegate_to: localhost
+
+    - name: Warning about LUKS failure
+      ansible.builtin.debug:
+        msg: "WARNING: LUKS rotation failed but root password was successfully changed. Manual intervention may be required."
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - luks_add_key_result is failed or luks_test_result is failed
+
+- name: Restart SSH service (Ubuntu)
+  ansible.builtin.service:
+    name: ssh
+    state: restarted
+  when: is_ubuntu and password_change_result is defined and password_change_result is succeeded
+
+- name: Restart SSH service (RHEL)
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+  when: is_rhel and password_change_result is defined and password_change_result is succeeded
+
+- name: Verify SSH service is running
+  ansible.builtin.service:
+    name: "{{ 'ssh' if is_ubuntu else 'sshd' }}"
+    state: started
+  register: ssh_status
+
+- name: Log SSH service status
+  ansible.builtin.lineinfile:
+    path: "{{ rotation_log_file }}"
+    line: "{{ ansible_date_time.iso8601 }} - SSH service status on {{ inventory_hostname }}: {{ ssh_status.state }}"
+    create: yes
+    mode: '0600'
+  delegate_to: localhost
+
+- name: Clean up old backup files (keep last 30 days)
+  ansible.builtin.find:
+    paths: "{{ backup_dir }}"
+    age: "{{ backup_retention_days }}d"
+    file_type: file
+  register: old_backups
+
+- name: Remove old backup files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ old_backups.files }}"
+
+# Comprehensive rotation summary logging
+- name: Log comprehensive rotation summary
+  ansible.builtin.lineinfile:
+    path: "{{ rotation_log_file }}"
+    line: |
+      {{ ansible_date_time.iso8601 }} - ROTATION SUMMARY for {{ inventory_hostname }}:
+      Root Password: {{ 'SUCCESS' if password_change_result is succeeded else 'FAILED' }}
+      LUKS Rotation: {{ 'ENABLED' if (rotate_luks | bool and luks_rotation_enabled | bool) else 'DISABLED' }}
+      LUKS Devices: {{ 'DETECTED' if has_luks_devices | default(false) else 'NONE' }}
+      SSH Service: {{ ssh_status.state | default('UNKNOWN') }}
+      OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+    create: yes
+    mode: '0600'
+  delegate_to: localhost
