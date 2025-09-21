@@ -1,0 +1,52 @@
+Sep 21 2025 02:00:01 - Starting password rotation on ubuntu-server-01.domain.com (Ubuntu 22.04)
+Sep 21 2025 02:00:01 - LUKS rotation DISABLED on ubuntu-server-01.domain.com
+Sep 21 2025 02:00:02 - LUKS devices detected on ubuntu-server-01.domain.com: No
+Sep 21 2025 02:00:03 - SUCCESS: Password rotated on ubuntu-server-01.domain.com
+Sep 21 2025 02:00:03 - SSH service status on ubuntu-server-01.domain.com: started
+Sep 21 2025 02:00:04 - INFO: Manual vault update required for ubuntu-server-01.domain.com - update rotation_history.root_last_changed and rotation_count
+Sep 21 2025 02:00:05 - ROTATION SUMMARY for ubuntu-server-01.domain.com:
+Root Password: SUCCESS
+LUKS Rotation: DISABLED
+LUKS Devices: NONE
+SSH Service: started
+OS: Ubuntu 22.04
+
+Sep 21 2025 02:00:06 - Starting password rotation on rhel-server-01.domain.com (RedHat 8.6)
+Sep 21 2025 02:00:06 - LUKS rotation DISABLED on rhel-server-01.domain.com
+Sep 21 2025 02:00:07 - LUKS devices detected on rhel-server-01.domain.com: No
+Sep 21 2025 02:00:08 - SUCCESS: Password rotated on rhel-server-01.domain.com
+Sep 21 2025 02:00:08 - SSH service status on rhel-server-01.domain.com: started
+Sep 21 2025 02:00:09 - INFO: Manual vault update required for rhel-server-01.domain.com - update rotation_history.root_last_changed and rotation_count
+Sep 21 2025 02:00:10 - ROTATION SUMMARY for rhel-server-01.domain.com:
+Root Password: SUCCESS
+LUKS Rotation: DISABLED
+LUKS Devices: NONE
+SSH Service: started
+OS: RedHat 8.6
+
+Sep 21 2025 02:00:11 - Starting password rotation on ubuntu-server-02.domain.com (Ubuntu 22.04)
+Sep 21 2025 02:00:11 - LUKS rotation ENABLED on ubuntu-server-02.domain.com
+Sep 21 2025 02:00:12 - LUKS devices detected on ubuntu-server-02.domain.com: Yes
+Sep 21 2025 02:00:13 - SUCCESS: Password rotated on ubuntu-server-02.domain.com
+Sep 21 2025 02:00:14 - SUCCESS: LUKS password rotated on ubuntu-server-02.domain.com for device /dev/sda2
+Sep 21 2025 02:00:14 - SSH service status on ubuntu-server-02.domain.com: started
+Sep 21 2025 02:00:15 - INFO: Manual vault update required for ubuntu-server-02.domain.com - update rotation_history.root_last_changed and rotation_count
+Sep 21 2025 02:00:16 - ROTATION SUMMARY for ubuntu-server-02.domain.com:
+Root Password: SUCCESS
+LUKS Rotation: ENABLED
+LUKS Devices: DETECTED
+SSH Service: started
+OS: Ubuntu 22.04
+
+Sep 21 2025 02:00:17 - Starting password rotation on rhel-server-02.domain.com (Rocky 8.7)
+Sep 21 2025 02:00:17 - LUKS rotation DISABLED on rhel-server-02.domain.com
+Sep 21 2025 02:00:18 - LUKS devices detected on rhel-server-02.domain.com: Yes
+Sep 21 2025 02:00:19 - SUCCESS: Password rotated on rhel-server-02.domain.com
+Sep 21 2025 02:00:19 - SSH service status on rhel-server-02.domain.com: started
+Sep 21 2025 02:00:20 - INFO: Manual vault update required for rhel-server-02.domain.com - update rotation_history.root_last_changed and rotation_count
+Sep 21 2025 02:00:21 - ROTATION SUMMARY for rhel-server-02.domain.com:
+Root Password: SUCCESS
+LUKS Rotation: DISABLED
+LUKS Devices: DETECTED
+SSH Service: started
+OS: Rocky 8.7

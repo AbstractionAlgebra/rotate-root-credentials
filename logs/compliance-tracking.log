@@ -1,0 +1,10 @@
+Sep 21 2025 02:00:05,ubuntu-server-01.domain.com,Ubuntu,22.04,SUCCESS,90-day rotation
+Sep 21 2025 02:00:10,rhel-server-01.domain.com,RedHat,8.6,SUCCESS,90-day rotation
+Sep 21 2025 02:00:16,ubuntu-server-02.domain.com,Ubuntu,22.04,SUCCESS,90-day rotation
+Sep 21 2025 02:00:21,rhel-server-02.domain.com,Rocky,8.7,SUCCESS,90-day rotation
+Jun 21 2025 02:00:05,ubuntu-server-01.domain.com,Ubuntu,22.04,SUCCESS,90-day rotation
+Jun 21 2025 02:00:10,rhel-server-01.domain.com,RedHat,8.6,SUCCESS,90-day rotation
+Jun 21 2025 02:00:16,ubuntu-server-02.domain.com,Ubuntu,22.04,SUCCESS,90-day rotation
+Jun 21 2025 02:00:21,rhel-server-02.domain.com,Rocky,8.7,SUCCESS,90-day rotation
+Mar 21 2025 02:00:05,ubuntu-server-01.domain.com,Ubuntu,22.04,SUCCESS,90-day rotation
+Mar 21 2025 02:00:10,rhel-server-01.domain.com,RedHat,8.6,SUCCESS,90-day rotation

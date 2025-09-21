@@ -14,12 +14,47 @@ luks_key_slot_backup: true  # Always backup key slot info before rotation
 
 # System compliance settings
 compliance_framework: "DISA_STIG"
-classification_level: "classified"
 
-# Logging configuration
-log_rotation_enabled: true
-log_retention_days: 365
-local_log_path: "{{ playbook_dir }}/logs"
+# Enhanced Security Logging and Audit Configuration
+logging_config:
+  rotation_enabled: true
+  retention_days: 365
+  local_log_path: "{{ playbook_dir }}/logs"
+  # Security audit logging
+  security_audit_enabled: true
+  security_log_level: "INFO"
+  security_log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  # Compliance logging
+  compliance_audit_enabled: true
+  compliance_log_retention: 2555  # 7 years in days for DISA STIG
+  # Event logging
+  log_events:
+    - password_changes
+    - login_attempts
+    - privilege_escalation
+    - file_access
+    - network_connections
+    - system_modifications
+  # Log integrity
+  log_encryption: true
+  log_signing: true
+  log_centralization: true
+  syslog_facility: "local0"
+
+# Security Audit Settings
+audit_settings:
+  enabled: true
+  audit_failure_action: "syslog"
+  max_log_size: 100
+  num_logs: 10
+  priority_boost: 4
+  flush: "incremental_async"
+  freq: 50
+
+# Legacy compatibility
+log_rotation_enabled: "{{ logging_config.rotation_enabled }}"
+log_retention_days: "{{ logging_config.retention_days }}"
+local_log_path: "{{ logging_config.local_log_path }}"
 
 # Package managers by OS family
 package_managers:
@@ -50,11 +85,50 @@ password_policy:
   require_numbers: true
   require_special_chars: true
   deny_username_in_password: true
+  max_password_age: 90
+  min_password_age: 1
+  password_history: 12
 
-# Connection timeout settings
+# FIPS 140-2 Cryptographic Settings
+fips_compliance:
+  enabled: true
+  enforce_fips_mode: true
+  approved_ciphers:
+    - aes256-gcm@openssh.com
+    - aes256-ctr
+    - aes192-ctr
+    - aes128-ctr
+  approved_macs:
+    - hmac-sha2-256
+    - hmac-sha2-512
+    - hmac-sha2-256-etm@openssh.com
+    - hmac-sha2-512-etm@openssh.com
+  approved_kex:
+    - diffie-hellman-group14-sha256
+    - diffie-hellman-group16-sha512
+    - ecdh-sha2-nistp256
+    - ecdh-sha2-nistp384
+    - ecdh-sha2-nistp521
+  min_key_size: 2048
+
+# Enhanced Security Settings
+security_hardening:
+  disable_root_login: false  # Required for credential rotation
+  require_key_auth: true
+  disable_password_auth_except_console: true
+  enable_audit_logging: true
+  enforce_selinux: true
+  enable_firewall: true
+  secure_tmp_dirs: true
+
+# Connection timeout settings (enhanced for security)
 connection_timeout: 30
 command_timeout: 60
+ssh_timeout: 30
+gather_timeout: 30
 
-# Backup settings
+# Backup settings (enhanced security)
 backup_enabled: true
 backup_retention_days: 30
+backup_encryption: true
+backup_integrity_check: true

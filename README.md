@@ -1,6 +1,6 @@
 # Linux Root Password Rotation with Ansible
 
-Automated root password rotation for Ubuntu 22.04+ and RHEL 8+ systems using Ansible. Designed for 50-device networks with DISA STIG and JSIG compliance requirements.
+Automated root password rotation for Ubuntu 22.04+ and RHEL 8+ systems using Ansible. Designed for 50-device networks with DISA STIG compliance requirements.
 
 ## Quick Start
 
@@ -135,11 +135,6 @@ cat logs/offline-systems-$(date +%Y-%m-%d).log
 - Audit logging and tracking
 - Secure credential storage with Ansible Vault
 
-### JSIG Compliance
-- Classified system support
-- Secure communication protocols
-- Audit trail maintenance
-- Access control enforcement
 
 ## Safety Features
 
