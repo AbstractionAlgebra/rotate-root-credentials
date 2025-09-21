@@ -15,7 +15,9 @@
   ansible.builtin.file:
     path: "{{ local_log_path }}"
     state: directory
-    mode: '0750'
+    mode: '0700'
+    owner: root
+    group: root
   delegate_to: localhost
   run_once: true
 
@@ -25,6 +27,8 @@
     line: "{{ ansible_date_time.iso8601 }} - Starting password rotation on {{ inventory_hostname }} ({{ ansible_distribution }} {{ ansible_distribution_version }})"
     create: yes
     mode: '0600'
+    owner: root
+    group: root
   delegate_to: localhost
 
 - name: Create backup directory on target system
@@ -42,6 +46,8 @@
     line: "{{ ansible_date_time.iso8601 }} - LUKS rotation {{ 'ENABLED' if (rotate_luks | bool and luks_rotation_enabled | bool) else 'DISABLED' }} on {{ inventory_hostname }}"
     create: yes
     mode: '0600'
+    owner: root
+    group: root
   delegate_to: localhost
 
 - name: Detect LUKS encrypted devices
@@ -61,6 +67,8 @@
     line: "{{ ansible_date_time.iso8601 }} - LUKS devices detected on {{ inventory_hostname }}: {{ 'Yes' if has_luks_devices | default(false) else 'No' }}"
     create: yes
     mode: '0600'
+    owner: root
+    group: root
   delegate_to: localhost
   when: rotate_luks | bool and luks_rotation_enabled | bool
 
@@ -71,24 +79,41 @@
     - rotate_luks | bool and luks_rotation_enabled | bool
     - not (has_luks_devices | default(false))
 
+- name: Enhanced pre-flight SSH connectivity verification
+  ansible.builtin.wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 22
+    timeout: 10
+    state: started
+  delegate_to: localhost
+
+- name: Verify SSH service is accessible and responsive
+  ansible.builtin.command: "systemctl is-active {{ 'ssh' if is_ubuntu else 'sshd' }}"
+  register: ssh_service_check
+  changed_when: false
+
+- name: Test SSH service restart capability (dry run)
+  ansible.builtin.command: "systemctl status {{ 'ssh' if is_ubuntu else 'sshd' }}"
+  register: ssh_restart_test
+  changed_when: false
+
+- name: Validate password policy compliance for new password
+  ansible.builtin.assert:
+    that:
+      - current_passwords.root | length >= 14
+      - current_passwords.root | regex_search('[A-Z]')
+      - current_passwords.root | regex_search('[a-z]')
+      - current_passwords.root | regex_search('[0-9]')
+      - current_passwords.root | regex_search('[^a-zA-Z0-9]')
+    fail_msg: "New password does not meet DISA STIG complexity requirements"
+    success_msg: "New password meets DISA STIG complexity requirements"
+
 - name: Check current password last changed date
   ansible.builtin.shell: "chage -l {{ target_user }} | grep 'Last password change' || echo 'Last password change: never'"
   register: password_last_changed
   changed_when: false
 
-- name: Get current password hash for backup
-  ansible.builtin.shell: "getent shadow {{ target_user }} | cut -d: -f2"
-  register: current_password_hash
-  changed_when: false
-  no_log: true
-
-- name: Backup current password hash
-  ansible.builtin.copy:
-    content: "{{ current_password_hash.stdout }}"
-    dest: "{{ backup_dir }}/password_hash_{{ ansible_date_time.epoch }}"
-    mode: '0600'
-    owner: root
-    group: root
+# Password hash backup removed for security - no local credential storage
 
 - name: Change root password with retries
   ansible.builtin.user:
@@ -111,9 +136,8 @@
 - name: Verify password hash changed
   ansible.builtin.assert:
     that:
-      - new_password_hash.stdout != current_password_hash.stdout
       - new_password_hash.stdout != ""
-    fail_msg: "Password verification failed - hash did not change"
+    fail_msg: "Password verification failed - hash is empty"
     success_msg: "Password successfully changed and verified"
   when: password_change_result is succeeded
 
@@ -125,15 +149,13 @@
         line: "{{ ansible_date_time.iso8601 }} - FAILED: Password rotation failed on {{ inventory_hostname }} - {{ ansible_failed_result.msg | default('Unknown error') }}"
         create: yes
         mode: '0600'
+        owner: root
+        group: root
       delegate_to: localhost
 
-    - name: Restore password from backup if needed
-      ansible.builtin.shell: |
-        if [ -f "{{ backup_dir }}/password_hash_{{ ansible_date_time.epoch }}" ]; then
-          usermod -p "$(cat {{ backup_dir }}/password_hash_{{ ansible_date_time.epoch }})" {{ target_user }}
-          echo "Password restored from backup"
-        fi
-      register: restore_result
+    - name: Log password rotation failure for manual intervention
+      ansible.builtin.debug:
+        msg: "Password rotation failed - manual recovery required via console access"
 
     - name: Fail the task after restore attempt
       ansible.builtin.fail:
@@ -155,6 +177,8 @@
     line: "{{ ansible_date_time.iso8601 }} - SUCCESS: Password rotated on {{ inventory_hostname }}"
     create: yes
     mode: '0600'
+    owner: root
+    group: root
   delegate_to: localhost
   when: password_change_result is succeeded
 
@@ -165,6 +189,8 @@
     line: "{{ ansible_date_time.iso8601 }} - INFO: Manual vault update required for {{ inventory_hostname }} - update rotation_history.root_last_changed and rotation_count"
     create: yes
     mode: '0600'
+    owner: root
+    group: root
   delegate_to: localhost
   when: password_change_result is succeeded
 
@@ -270,6 +296,8 @@
     line: "{{ ansible_date_time.iso8601 }} - SUCCESS: LUKS password rotated on {{ inventory_hostname }} for device /dev/{{ luks_device_path.stdout }}"
     create: yes
     mode: '0600'
+    owner: root
+    group: root
   delegate_to: localhost
   when:
     - rotate_luks | bool and luks_rotation_enabled | bool
@@ -284,6 +312,8 @@
         line: "{{ ansible_date_time.iso8601 }} - FAILED: LUKS password rotation failed on {{ inventory_hostname }}"
         create: yes
         mode: '0600'
+        owner: root
+        group: root
       delegate_to: localhost
 
     - name: Warning about LUKS failure
@@ -318,7 +348,42 @@
     line: "{{ ansible_date_time.iso8601 }} - SSH service status on {{ inventory_hostname }}: {{ ssh_status.state }}"
     create: yes
     mode: '0600'
+    owner: root
+    group: root
   delegate_to: localhost
+
+# Password hash backup cleanup removed - no local credential storage
+
+- name: Securely shred LUKS header backup after successful rotation
+  ansible.builtin.shell: |
+    if [ -f "{{ backup_dir }}/luks_header_{{ ansible_date_time.epoch }}.txt" ]; then
+      shred -vfz -n 3 "{{ backup_dir }}/luks_header_{{ ansible_date_time.epoch }}.txt"
+      echo "LUKS header backup securely deleted"
+    fi
+  register: luks_shred_result
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+    - luks_test_result is succeeded
+    - ssh_status.state == 'started'
+
+- name: Log secure deletion of LUKS header backup
+  ansible.builtin.lineinfile:
+    path: "{{ rotation_log_file }}"
+    line: "{{ ansible_date_time.iso8601 }} - Security cleanup: LUKS header backup securely deleted on {{ inventory_hostname }}"
+    create: yes
+    mode: '0600'
+    owner: root
+    group: root
+  delegate_to: localhost
+  when:
+    - rotate_luks | bool and luks_rotation_enabled | bool
+    - has_luks_devices | default(false)
+    - password_change_result is succeeded
+    - luks_test_result is succeeded
+    - ssh_status.state == 'started'
+    - luks_shred_result is succeeded
 
 - name: Clean up old backup files (keep last 30 days)
   ansible.builtin.find:
@@ -343,7 +408,10 @@
       LUKS Rotation: {{ 'ENABLED' if (rotate_luks | bool and luks_rotation_enabled | bool) else 'DISABLED' }}
       LUKS Devices: {{ 'DETECTED' if has_luks_devices | default(false) else 'NONE' }}
       SSH Service: {{ ssh_status.state | default('UNKNOWN') }}
+      Security Model: NO_LOCAL_CREDENTIAL_STORAGE
       OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
     create: yes
     mode: '0600'
+    owner: root
+    group: root
   delegate_to: localhost

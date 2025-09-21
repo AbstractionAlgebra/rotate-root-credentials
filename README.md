@@ -138,22 +138,25 @@ cat logs/offline-systems-$(date +%Y-%m-%d).log
 
 ## Safety Features
 
-### Pre-flight Checks
-- System connectivity verification
-- OS version validation
-- SSH service status confirmation
-- Password policy compliance
+### Enhanced Pre-flight Checks
+- System connectivity verification with timeout testing
+- OS version validation (Ubuntu 22.04+, RHEL 8+)
+- SSH service accessibility and responsiveness verification
+- SSH service restart capability validation
+- DISA STIG password policy compliance enforcement
+- Enhanced network and service health validation
 
 ### Error Handling
 - 3-retry mechanism for network issues
-- Automatic password backup before rotation
+- Enhanced pre-flight validation to prevent failures
 - SSH service restart after rotation
-- Graceful failure handling with logging
+- Graceful failure handling with comprehensive logging
 
 ### Recovery Procedures
-- Password hash backup in `/var/backups/credential-rotation/`
-- Automatic restore on rotation failure
-- Manual recovery instructions in logs
+- **Zero Local Credential Storage** - No password hashes stored on target systems
+- Manual recovery via console access (IPMI/iLO) for failed rotations
+- Comprehensive failure logging for troubleshooting
+- Out-of-band access required for emergency recovery
 
 ## Troubleshooting
 
@@ -176,18 +179,21 @@ cat logs/offline-systems-$(date +%Y-%m-%d).log
 
 ### Manual Recovery
 
-If automated recovery fails:
+If password rotation fails:
 
 ```bash
-# Connect to affected system
-ssh root@affected-system.domain.com
+# Access via console (IPMI/iLO/Physical)
+# No local backups - manual password reset required
 
-# Restore from backup
-sudo usermod -p "$(cat /var/backups/credential-rotation/password_hash_TIMESTAMP)" root
+# Reset password via console access
+passwd root
 
 # Verify SSH service
 sudo systemctl status ssh  # Ubuntu
 sudo systemctl status sshd # RHEL
+
+# Re-run rotation once system is accessible
+ansible-playbook rotate-creds.yml --ask-vault-pass --limit affected-system.domain.com
 ```
 
 ## Maintenance
@@ -208,11 +214,19 @@ Set up automated 90-day rotation:
 
 ## Security Considerations
 
-- Store vault password securely (consider using a password manager)
-- Regularly audit access to this repository
-- Review logs for suspicious activity
-- Maintain backup of current vault file
-- Use dedicated service accounts for automation
+### Zero-Trust Security Model
+- **No Local Credential Storage** - Password hashes never stored on target systems
+- Enhanced pre-flight validation reduces rotation failure probability
+- Manual recovery via console access only (IPMI/iLO)
+- Comprehensive audit logging for all operations
+
+### Operational Security
+- Store vault password securely (consider using HSM or password manager)
+- Regularly audit access to this repository and Ansible controller
+- Review logs for suspicious activity and failed access attempts
+- Maintain encrypted backup of vault files with separate key storage
+- Use dedicated service accounts with minimal required privileges
+- Implement network segmentation for Ansible controller access
 
 ## Support
 

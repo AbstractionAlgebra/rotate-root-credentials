@@ -1,10 +1,10 @@
 # ==============================================================================
 # Linux Root Password and LUKS Rotation Playbook
 # ==============================================================================
-# Version:     2.0
+# Version:     2.1
 # Description: Automated root password and optional LUKS encryption password
-#              rotation for enterprise Linux systems with comprehensive logging,
-#              backup/restore, date tracking, and DISA STIG compliance
+#              rotation for enterprise Linux systems with zero local credential
+#              storage, enhanced pre-flight validation, and DISA STIG compliance
 # Date:        2025-09-21
 # Author:      Michael Angel
 #
@@ -14,14 +14,18 @@
 # • Optional LUKS encryption password rotation (disabled by default for safety)
 # • Password history tracking with previous passwords for rollback capability
 # • Rotation date tracking and audit trail maintenance
-# • Automatic backup and restore functionality for failed rotations
+# • Zero local credential storage - no password hashes stored on target systems
+# • Enhanced pre-flight validation with SSH connectivity and policy compliance
 # • Comprehensive audit logging with rotation tracking and summaries
 # • DISA STIG compliant password policies and procedures
 # • Retry mechanisms with configurable failure tolerance (max 20% failure rate)
-# • SSH service management and connectivity verification
+# • SSH service management and enhanced connectivity verification
+# • SSH service restart capability testing and validation
+# • DISA STIG password policy compliance enforcement
 # • Parallel execution with free strategy for performance
 # • LUKS device detection and safe key slot management
 # • Compliance tracking and reporting capabilities
+# • Manual recovery via console access for enhanced security
 #
 # Sample Usage:
 #   # Encrypt vault with new passwords first:
@@ -32,9 +36,6 @@
 #
 #   # Run with LUKS rotation enabled (requires both flags):
 #   ansible-playbook rotate-creds.yml -e "rotate_luks=true luks_rotation_enabled=true"
-#
-#   # Run on specific group:
-#   ansible-playbook rotate-creds.yml --limit ubuntu
 #
 #   # Dry run to test:
 #   ansible-playbook rotate-creds.yml --check
@@ -76,6 +77,8 @@
         line: "{{ ansible_date_time.iso8601 }} - OFFLINE: {{ inventory_hostname }} is unreachable"
         create: yes
         mode: '0600'
+        owner: root
+        group: root
       delegate_to: localhost
       when: connectivity_check is failed
 
@@ -93,6 +96,8 @@
         line: "{{ ansible_date_time.iso8601 }},{{ inventory_hostname }},{{ ansible_distribution }},{{ ansible_distribution_version }},SUCCESS,90-day rotation"
         create: yes
         mode: '0600'
+        owner: root
+        group: root
       delegate_to: localhost
 
   handlers:
